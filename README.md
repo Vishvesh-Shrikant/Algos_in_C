@@ -7,4 +7,4 @@ This is the syllabus for practical exam
 
 
 --> distance algorithms 
-![alt text](images/distance.png.png)
+![alt text](images/distance.png)

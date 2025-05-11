@@ -1,74 +1,95 @@
+#include <time.h> 
 #include <stdio.h>
-#include <stdlib.h>
-#define max 10
+#include <stdlib.h>  
 
-int arr[max];
+#define n 30000
+int arr1[n], arr2[n], arr3[n];
 
-// merge the sorted halves
-void merge(int left , int mid, int right)
+// Merge function: merges two sorted subarrays into a single sorted subarray
+void merge(int arr[], int left, int mid, int right)
 {
-    int temp[max];
-    // Merge the two halves
-    int i = left, j = mid + 1, k = left;
-    
-    // adding the elements from the halves into the temporary array 
-    while (i <= mid && j <= right) 
+    int temp[right - left + 1];  // Temporary array to hold merged elements
+    int i = left;     // Pointer for left subarray
+    int j = mid + 1;  // Pointer for right subarray
+    int k = 0;        // Pointer for temp array
+
+    // Merge elements from both subarrays into temp[]
+    while (i <= mid && j <= right)
     {
-        if (arr[i] <= arr[j]) 
-            temp[k++] = arr[i++];
-        else 
-            temp[k++] = arr[j++];
+        if (arr[i] <= arr[j])
+            temp[k++] = arr[i++];  // Take element from left subarray
+        else
+            temp[k++] = arr[j++];  // Take element from right subarray
     }
-    // Copy remaining elements from the left half
-    while (i <= mid) 
+
+    // Copy any remaining elements from left subarray
+    while (i <= mid)
         temp[k++] = arr[i++];
 
-    // Copy remaining elements from the right half
-    while (j <= right) 
+    // Copy any remaining elements from right subarray
+    while (j <= right)
         temp[k++] = arr[j++];
 
-    // Copy the sorted elements back to the original array
-    for (i = left; i <= right; i++) 
-        arr[i] = temp[i];
+    // Copy merged elements back to the original array
+    for (i = left, k = 0; i <= right; i++, k++)
+        arr[i] = temp[k];
 }
 
-//sorting array using merge sort
-void merge_sort(int left , int right)
+// Merge Sort function: recursively divides array and calls merge()
+void merge_sort(int arr[], int left, int right)
 {
-    int mid;
-    if( left < right)
+    if (left < right)
     {
-        mid = left + (right - left)/2;
-        
-        merge_sort (left , mid);
-        merge_sort( mid+1, right);
-        
-        merge( left , mid , right);
+        int mid = left + (right - left) / 2;  // Find midpoint
+
+        // Recursively sort left half
+        merge_sort(arr, left, mid);
+
+        // Recursively sort right half
+        merge_sort(arr, mid + 1, right);
+
+        // Merge the sorted halves
+        merge(arr, left, mid, right);
     }
 }
 
-// printing the array 
-void print_arr()
-{
-    int i;
-    for(i = 0 ; i < max ; i++)
-    {
-        printf("%d\t", arr[i]);
-    }
-}
- 
 int main()
 {
     int i;
-    for ( i = 0 ; i < max ; i++)
-    {
-        arr[i] = rand() % (max - 1);
-        //above code is used to generate a random number 
-    }
-    printf("\nUnsorted Array: \n");
-    print_arr();
-    merge_sort(0, max-1);
-    printf("\nSorted Array: \n");
-    print_arr();
-    
+    clock_t t;
+    double time_taken1, time_taken2, time_taken3;
+
+    srand(time(0));  // Seed random number generator
+
+    // Generate random array
+    for (i = 0; i < n; i++)
+        arr1[i] = rand() % (n - 1);
+
+    // Generate sorted array
+    for (i = 0; i < n; i++)
+        arr2[i] = i;
+
+    // Generate reverse sorted array
+    for (i = 0; i < n; i++)
+        arr3[i] = n - i;
+
+    // Measure time for sorting random array
+    t = clock();
+    merge_sort(arr1, 0, n - 1);
+    time_taken1 = ((double)(clock() - t));
+    printf("\nMerge Sort (random values, %d elements): %lf ", n, time_taken1);
+
+    // Measure time for sorting already sorted array
+    t = clock();
+    merge_sort(arr2, 0, n - 1);
+    time_taken2 = ((double)(clock() - t));
+    printf("\nMerge Sort (sorted values, %d elements): %lf ", n, time_taken2);
+
+    // Measure time for sorting reverse sorted array
+    t = clock();
+    merge_sort(arr3, 0, n - 1);
+    time_taken3 = ((double)(clock() - t));
+    printf("\nMerge Sort (descending values, %d elements): %lf ", n, time_taken3);
+
+    return 0;
 }

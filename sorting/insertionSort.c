@@ -1,72 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#define max 10
 
-#define n 30000  // Size of the array
+int arr[max];
 
-// Function to sort array using Insertion Sort algorithm
-void insertionSort(int arr[])
+//sorting array using insertion sort 
+void insertion_sort()
 {
-    int i, j;
-    
-    // Traverse the array from index 1 to n-1
-    for (i = 1; i < n; i++)
-    {
-        int key = arr[i];    // Element to be inserted at correct position
-        j = i - 1;
+    int i , j;
+    for ( i = 1; i < max ; i++ )
+    { 
+        int key = arr[i];
+        int j = i - 1;
 
-        // Shift elements of arr[0..i-1] that are greater than key
-        while (j >= 0 && arr[j] > key)
-        {
-            arr[j + 1] = arr[j];  // Shift element one position to the right
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
             j = j - 1;
         }
-
-        // Place key in its correct position
         arr[j + 1] = key;
     }
+
+}
+
+// printing the array 
+void print_arr()
+{
+    int i;
+    for(i = 0 ; i < max ; i++)
+    {
+        printf("%d\t", arr[i]);
+    }
+    
 }
 
 int main()
 {
-    int i, arr1[n], arr2[n], arr3[n];
-    clock_t t, t1, t2, t3;
-    double time_taken1, time_taken2, time_taken3;
+    int i;
 
-    // Initialize arr1 with random values
-    for (i = 0; i < n; i++)
-        arr1[i] = rand() % (n - 1);
-
-    // Initialize arr2 with sorted values (best case for insertion sort)
-    for (i = 0; i < n; i++)
-        arr2[i] = i;
-
-    // Initialize arr3 with descending values (worst case for insertion sort)
-    for (i = 0; i < n; i++)
-        arr3[i] = n - i;
-
-    // Measure time to sort random array
-    t = clock();
-    insertionSort(arr1);
-    t1 = clock() - t;
-    time_taken1 = ((double)t1);
-
-    // Measure time to sort already sorted array
-    t = clock();
-    insertionSort(arr2);
-    t2 = clock() - t;
-    time_taken2 = ((double)t2);
-
-    // Measure time to sort descending array
-    t = clock();
-    insertionSort(arr3);
-    t3 = clock() - t;
-    time_taken3 = ((double)t3);
-
-    // Print execution times
-    printf("\nInsertion Sort (random values, %d elements): %lf", n, time_taken1);
-    printf("\nInsertion Sort (sorted array, %d elements): %lf", n, time_taken2);
-    printf("\nInsertion Sort (descending values, %d elements): %lf", n, time_taken3);
-
-    return 0;
+    for ( i = 0 ; i < max ; i++)
+    {
+        arr[i] = rand() % (max - 1);
+        //above code is used to generate a random number 
+    }
+    printf("\nUnsorted Array: \n");
+    print_arr();
+    insertion_sort();
+    printf("\nSorted Array: \n");
+    print_arr();
+    
 }

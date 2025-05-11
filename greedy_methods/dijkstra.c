@@ -1,104 +1,107 @@
-// Online C compiler to run C program online
+// Dijkstra's Algorithm Implementation in C (with comments)
+
 #include <stdio.h>
 #include <limits.h>
-#define V 6
-int graph[V][V], src; 
 
+#define V 6  // Number of vertices in the graph
 
-void printDistance (int dist[])
-{
-    int i = 0;
-    for( i = 0 ; i < V ; i++)
-    {
-        printf("Distance of source %f from to destination %d : %d", src, i , dist[i]);
-        printf("\n");
+int graph[V][V], src;  // Graph adjacency matrix and source node
+
+// Function to print the shortest distances from source to all vertices
+void printDistance(int dist[]) {
+    int i;
+    for (i = 0; i < V; i++) {
+        printf("Distance from source %d to destination %d : ", src, i);
+        if (dist[i] == INT_MAX)
+            printf("Infinity (unreachable)\n");
+        else
+            printf("%d\n", dist[i]);
     }
 }
-int minDistance( int dist [], int visited[])
-{
-    int i, min=INT_MAX, min_idx; 
-    for ( i=0 ; i< V; i++)
-    {
-        if( visited[i]==0 && dist[i]< min)
-        {
-            min=dist[i];
-            min_idx=i;
+
+// Function to find the vertex with the minimum distance value from
+// the set of vertices not yet processed
+int minDistance(int dist[], int visited[]) {
+    int i, min = INT_MAX, min_idx = -1;
+
+    for (i = 0; i < V; i++) {
+        if (visited[i] == 0 && dist[i] < min) {
+            min = dist[i];
+            min_idx = i;
         }
     }
     return min_idx;
 }
 
-
-void dijsktra()
-{
+// Function that implements Dijkstra's algorithm
+void dijkstra() {
     int dist[V], visited[V];
-    int i, u,v;
-    
-    //setting all distance to infinity at the start
-    //making all nodes the unvisited at the start
-    for ( i=0 ; i< V; i++)
-    {
-        dist[V]= INT_MAX;
-        visited[i]=0;
+    int i, u, v;
+
+    // Initialize all distances as infinity and visited[] as false
+    for (i = 0; i < V; i++) {
+        dist[i] = INT_MAX;
+        visited[i] = 0;
     }
-    
-    dist[src]= 0;
-    
-    for ( i = 0 ; i < V-1 ;i++)
-    {
-        //used to find the vertex with the smallest distance
-        //initially it will start with src node , and the progress onto other nodes once visited
-        u= minDistance(dist, visited);
-        visited[u]=1;
-        
-        for (v =0 ; v < V; v++)
-        {
-            //this checks if : node is not visited , that dist[u] is not inifinity 
-            //then  it checks if distance of u and weight of graph is lesser than current distance
-            if( visited[v]==0 && graph[u][v] && dist[u]!= INT_MAX && (dist[u]+ graph[u][v] < dist[v]))
-            {
-                dist[v]=dist[u]+ graph[u][v];
+
+    // Distance to the source is always 0
+    dist[src] = 0;
+
+    // Find shortest path for all vertices
+    for (i = 0; i < V - 1; i++) {
+        // Select the unvisited vertex with the smallest distance
+        u = minDistance(dist, visited);
+        if (u == -1)  // No more reachable vertices
+            break;
+        visited[u] = 1;
+
+        // Update dist[] of adjacent vertices of the picked vertex
+        for (v = 0; v < V; v++) {
+            // Update dist[v] if:
+            // 1. There is an edge from u to v (graph[u][v] != 0 or INT_MAX)
+            // 2. Vertex v is not visited
+            // 3. Total weight of path from src to v through u is smaller than current value of dist[v]
+            if (visited[v] == 0 && graph[u][v] != INT_MAX && dist[u] != INT_MAX &&
+                (dist[u] + graph[u][v] < dist[v])) {
+                dist[v] = dist[u] + graph[u][v];
             }
         }
     }
-    
+
     printDistance(dist);
 }
 
-
-void input_graph()
-{
+// Function to input the adjacency matrix
+void input_graph() {
     int u, v;
-    printf("\nEnter the adjacency matrix\n");
-    printf("\nNote: if there is no direct edge , enter a 1000\n");
-    for (u = 0 ; u < V ; u++)
-    {
-        for ( v =0 ; v< V ; v++)
-        {
+    printf("\nEnter the adjacency matrix (6x6):\n");
+    printf("Note: if there is no direct edge between two nodes, enter 1000\n");
+
+    for (u = 0; u < V; u++) {
+        for (v = 0; v < V; v++) {
             scanf("%d", &graph[u][v]);
-            if( graph[u][v] >= 1000)
-            {
-                graph[u][v]= INT_MAX;
+            // Convert large number (representing no edge) to INT_MAX
+            if (graph[u][v] >= 1000) {
+                graph[u][v] = INT_MAX;
             }
         }
-        printf("\n");
     }
 }
 
-
 int main() {
-    
     input_graph();
-    //to validate a proper source,which is within liimits
-    do
-    {
-        printf("\nEnter source node: ");
+
+    // Input a valid source node
+    do {
+        printf("\nEnter source node (0 to %d): ", V - 1);
         scanf("%d", &src);
-        if(src >= V)
-        {
-            printf("\nEnter a valid source.\n");
+        if (src < 0 || src >= V) {
+            printf("Invalid source node. Please enter a valid node index.\n");
         }
-    }while ( src >= V);
-    dijsktra();
+    } while (src < 0 || src >= V);
+
+    // Run Dijkstra's algorithm
+    dijkstra();
+
     return 0;
 }

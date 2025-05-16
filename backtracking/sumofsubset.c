@@ -1,40 +1,44 @@
-// A recursive solution for subset sum problem
-
 #include <stdio.h>
 #include <stdbool.h>
 
-// Returns true if there is a subset
-// of set[] with sum equal to given sum
-bool isSubsetSum(int set[], int n, int sum)
-{
-	// Base Cases
-	if (sum == 0)
-		return true;
-	if (n == 0)
-		return false;
-
-	// If last element is greater than sum,
-	// then ignore it
-	if (set[n - 1] > sum)
-		return isSubsetSum(set, n - 1, sum);
-
-	// Else, check if sum can be obtained by any
-	// of the following:
-	// (a) including the last element
-	// (b) excluding the last element
-	return isSubsetSum(set, n - 1, sum)
-		|| isSubsetSum(set, n - 1, sum - set[n - 1]);
+void printSubset(int subset[], int size) {
+    printf("Subset found: ");
+    for (int i = 0; i < size; i++)
+        printf("%d ", subset[i]);
+    printf("\n");
 }
 
-// Driver code
-int main()
-{
-	int set[] = { 3, 34, 4, 12, 5, 2 };
-	int sum = 9;
-	int n = sizeof(set) / sizeof(set[0]);
-	if (isSubsetSum(set, n, sum) == true)
-		printf("Found a subset with given sum");
-	else
-		printf("No subset with given sum");
-	return 0;
+bool isSubsetSum(int set[], int n, int sum, int subset[], int subsetSize) {
+    // Base Cases
+    if (sum == 0) {
+        printSubset(subset, subsetSize);
+        return true; // If you want all subsets, don't return here
+    }
+    if (n == 0)
+        return false;
+
+    // If last element is greater than sum, skip it
+    if (set[n - 1] > sum)
+        return isSubsetSum(set, n - 1, sum, subset, subsetSize);
+
+    // (a) Include the last element
+    subset[subsetSize] = set[n - 1];
+    bool include = isSubsetSum(set, n - 1, sum - set[n - 1], subset, subsetSize + 1);
+
+    // (b) Exclude the last element
+    bool exclude = isSubsetSum(set, n - 1, sum, subset, subsetSize);
+
+    return include || exclude;
+}
+
+int main() {
+    int set[] = { 3, 34, 5, 12, 6, 1 };
+    int sum = 9;
+    int n = sizeof(set) / sizeof(set[0]);
+    int subset[n]; // Temp array to store subset
+
+    if (!isSubsetSum(set, n, sum, subset, 0))
+        printf("No subset with given sum\n");
+
+    return 0;
 }
